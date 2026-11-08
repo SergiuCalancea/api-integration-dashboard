@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Pulse — Live API Dashboard</title>
+    <meta name="description" content="Live dashboard aggregating weather, exchange rates and crypto prices from public APIs." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%237c5cff'/><path d='M4 16h6l3-7 5 14 3-7h7' stroke='white' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="14" />
+          <path d="M4 16h6l3-7 5 14 3-7h7" />
+        </svg>
+        <div>
+          <h1>Global Pulse</h1>
+          <p class="subtitle">Live data from 4 public APIs</p>
+        </div>
+      </div>
+
+      <form id="city-form" class="search" autocomplete="off">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+        <input id="city-input" type="search" placeholder="Search a city…" aria-label="City" minlength="2" maxlength="80" />
+        <button type="submit">Go</button>
+      </form>
+
+      <div class="topbar-right">
+        <span class="live-pill"><span class="dot"></span><span id="last-updated">Loading…</span></span>
+        <button id="refresh-btn" class="icon-btn" title="Refresh all data" aria-label="Refresh">
+          <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36" /><path d="M21 3v6h-6" /></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <!-- WEATHER -->
+      <section class="card weather-card" id="weather-card">
+        <div class="card-head">
+          <h2><span class="badge badge-sky">Weather</span> <span id="w-location">—</span></h2>
+          <span class="source">Open-Meteo</span>
+        </div>
+        <div class="weather-main">
+          <div class="weather-now">
+            <div id="w-icon" class="weather-icon"></div>
+            <div>
+              <div class="temp"><span id="w-temp">--</span><sup>°C</sup></div>
+              <div id="w-desc" class="muted">—</div>
+            </div>
+          </div>
+          <dl class="stats">
+            <div><dt>Feels like</dt><dd id="w-feels">--</dd></div>
+            <div><dt>Humidity</dt><dd id="w-hum">--</dd></div>
+            <div><dt>Wind</dt><dd id="w-wind">--</dd></div>
+            <div><dt>Local time</dt><dd id="w-time">--</dd></div>
+          </dl>
+        </div>
+        <div class="chart-box short"><canvas id="weather-chart" aria-label="Temperature for the next 24 hours"></canvas></div>
+        <div id="w-daily" class="daily"></div>
+      </section>
+
+      <!-- CURRENCY -->
+      <section class="card fx-card" id="fx-card">
+        <div class="card-head">
+          <h2><span class="badge badge-green">Exchange rates</span></h2>
+          <div class="controls">
+            <label class="select">
+              <span>Base</span>
+              <select id="fx-base"><option>EUR</option></select>
+            </label>
+            <div class="segmented" id="fx-range" role="group" aria-label="Period">
+              <button data-days="7">7D</button>
+              <button data-days="30" class="active">30D</button>
+              <button data-days="90">90D</button>
+            </div>
+          </div>
+        </div>
+        <div id="fx-tiles" class="tiles"></div>
+        <div class="chart-box"><canvas id="fx-chart" aria-label="Exchange rate history"></canvas></div>
+        <p class="footnote">Source: European Central Bank via Frankfurter · <span id="fx-date"></span></p>
+      </section>
+
+      <!-- CRYPTO -->
+      <section class="card crypto-card" id="crypto-card">
+        <div class="card-head">
+          <h2><span class="badge badge-amber">Crypto</span></h2>
+          <span class="source">CoinGecko</span>
+        </div>
+        <ul id="crypto-list" class="coin-list"></ul>
+        <div class="chart-head">
+          <span id="crypto-chart-title" class="muted">7-day price</span>
+        </div>
+        <div class="chart-box short"><canvas id="crypto-chart" aria-label="Crypto price history"></canvas></div>
+      </section>
+
+      <!-- TELEGRAM -->
+      <section class="card telegram-card" id="telegram-card">
+        <div class="card-head">
+          <h2><span class="badge badge-violet">Automation</span> Telegram digest</h2>
+          <span id="tg-status" class="status-chip">checking…</span>
+        </div>
+        <p class="muted">
+          Collects data from every integration above and sends a formatted summary to a Telegram chat
+          through the Bot API. Schedule it with cron to get a morning briefing.
+        </p>
+        <button id="tg-send" class="primary-btn" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
+          Send digest now
+        </button>
+        <pre id="tg-preview" class="preview" hidden></pre>
+      </section>
+
+      <!-- ARCHITECTURE -->
+      <section class="card arch-card">
+        <div class="card-head"><h2><span class="badge badge-slate">How it works</span></h2></div>
+        <ol class="flow">
+          <li><strong>Browser</strong><span>Vanilla JS + Chart.js</span></li>
+          <li><strong>FastAPI backend</strong><span>Validation · async httpx · TTL cache</span></li>
+          <li><strong>Public APIs</strong><span>Open-Meteo · Frankfurter · CoinGecko · Telegram</span></li>
+        </ol>
+        <a class="link" href="/docs" target="_blank" rel="noopener">Explore the REST API (Swagger) →</a>
+      </section>
+    </main>
+
+    <footer class="footer">Built with Python, FastAPI &amp; Chart.js · Portfolio project</footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
