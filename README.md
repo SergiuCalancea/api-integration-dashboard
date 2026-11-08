@@ -99,7 +99,9 @@ ruff check .  # lint
 
 ## Mobile
 
-<img src="docs/screenshot-mobile.png" alt="Mobile screenshot" width="300">
+Fully responsive. Here it is on a 390px-wide phone screen:
+
+![Mobile screenshots](docs/screenshot-mobile.png)
 
 ## Tech stack
 
