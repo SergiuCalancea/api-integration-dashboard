@@ -4,7 +4,17 @@ A live dashboard that **aggregates data from four public APIs** behind a clean, 
 **FastAPI** backend and presents it in a responsive web UI. It also **automates delivery**
 by pushing a formatted digest to **Telegram**.
 
+## Screenshots
+
+**Desktop**
+
 ![Desktop screenshot](docs/screenshot-desktop.png)
+
+**Mobile**: the layout adapts to phone screens
+
+<p align="center">
+  <img src="docs/screenshot-mobile.png" alt="Mobile screenshots: weather, crypto and exchange rates" width="100%">
+</p>
 
 ## What it does
 
@@ -24,7 +34,7 @@ by pushing a formatted digest to **Telegram**.
 - **TTL cache** so the dashboard stays fast and respects third-party rate limits
 - **Security**: secrets come from `.env`, the Telegram token never appears in logs or responses, and user content is HTML-escaped
 - **Tests**: 11 pytest tests, with every external API mocked through `httpx.MockTransport` (they run offline in under a second)
-- **Responsive UI** built with vanilla JS and Chart.js: dark glassmorphism design, loading skeletons, toasts and auto-refresh every 5 minutes
+- **Responsive UI** built with vanilla JS and Chart.js: dark glassmorphism design, loading skeletons, toasts and auto-refresh every 5 minutes; respects `prefers-reduced-motion`
 
 ## Architecture
 
@@ -96,12 +106,6 @@ To get a daily briefing automatically, schedule it with cron:
 pytest        # 11 tests, fully offline
 ruff check .  # lint
 ```
-
-## Mobile
-
-Fully responsive. Here it is on a 390px-wide phone screen:
-
-![Mobile screenshots](docs/screenshot-mobile.png)
 
 ## Tech stack
 

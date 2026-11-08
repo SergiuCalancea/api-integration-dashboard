@@ -404,4 +404,13 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .toast.error { border-color: rgba(248, 113, 113, 0.5); }
 .toast.success { border-color: rgba(52, 211, 153, 0.5); }
 
+/* Accessibility: respect users who disabled animations at the OS level. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 .footer { text-align: center; color: var(--faint); font-size: 0.78rem; padding: 32px 0; }
